@@ -1,3 +1,3 @@
-New Chat App in Go-Lang
+Basic 2-way chat using Socket Programming
 
-by Saumay Rustagi
+(build the server and client seperately to avoid main collision)
