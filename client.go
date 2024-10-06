@@ -18,9 +18,9 @@ func main() {
 		panic(fmt.Sprintf("Error connecting to %v:%d", sockaddr.Addr, sockaddr.Port))
 	}
 
-	defer helper.CloseSockets(sock)
+	defer helper.Close_sockets(sock)
 
-	buffer := make([]byte, 1024)
+	buffer := helper.Make_buffer()
 
 	recvInt := helper.Recv(sock, buffer)
 

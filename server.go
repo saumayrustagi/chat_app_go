@@ -2,6 +2,8 @@ package main
 
 import (
 	"chat_app/helper"
+	"fmt"
+	"strconv"
 	"syscall"
 )
 
@@ -9,10 +11,11 @@ func main() {
 	listener_sock := create_listener()
 	printListenerAddress(listener_sock)
 	connected_sock := accept_sock(listener_sock)
-	defer helper.CloseSockets(listener_sock, connected_sock)
+	defer helper.Close_sockets(listener_sock, connected_sock)
 
-	textMsg := "Ok"
-	if syscall.Sendto(connected_sock, []byte(textMsg), 0, nil) == nil {
+	send_buffer := helper.Make_buffer()
+	copy(send_buffer, "Ok")
+	if syscall.Sendto(connected_sock, send_buffer, 0, nil) == nil {
 	} else {
 		panic("Sendto() failed")
 	}
@@ -21,7 +24,14 @@ func main() {
 func printListenerAddress(listener_sock int) {
 	if temp_sock_addr, err := syscall.Getsockname(listener_sock); err == nil {
 		if sa, ok := temp_sock_addr.(*syscall.SockaddrInet4); ok {
-			println("Connect to Port:", sa.Port)
+			var addr string
+			for i := 0; i < 4; i++ {
+				addr += strconv.Itoa(int(sa.Addr[i]))
+				if i != 3 {
+					addr += "."
+				}
+			}
+			println(fmt.Sprintf("Listening on %s: %d", addr, sa.Port))
 		} else {
 			panic("Invalid port")
 		}
