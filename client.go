@@ -8,14 +8,8 @@ import (
 )
 
 func main() {
-	address, err := strconv.Atoi(os.Args[1])
-	if err != nil {
-		panic("Invalid number")
-	}
-	sock, err := syscall.Socket(syscall.AF_INET, syscall.SOCK_STREAM, 0)
-	if err != nil {
-		panic("Error creating socket")
-	}
+	address := getAddrFromArgs()
+	sock := createSocket()
 
 	sockaddr := syscall.SockaddrInet4{Port: address, Addr: [4]byte{127, 0, 0, 1}}
 
@@ -33,11 +27,27 @@ func main() {
 
 	buffer := make([]byte, 1024)
 
-	if _, _, err = syscall.Recvfrom(sock, buffer, 0); err != nil {
+	if _, _, err := syscall.Recvfrom(sock, buffer, 0); err != nil {
 		panic("RecvFrom() failed")
 	}
 
 	println(string(buffer))
+}
+
+func getAddrFromArgs() int {
+	address, err := strconv.Atoi(os.Args[1])
+	if err != nil {
+		panic("Invalid number")
+}
+	return address
+}
+
+func createSocket() int {
+	sock, err := syscall.Socket(syscall.AF_INET, syscall.SOCK_STREAM, 0)
+	if err != nil {
+		panic("Error creating socket")
+	}
+	return sock
 }
 
 // func accept_sock(listener_sock int) int {

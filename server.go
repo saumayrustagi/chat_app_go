@@ -7,26 +7,32 @@ import (
 
 func main() {
 	listener_sock := create_listener()
+	printListenerAddress(listener_sock)
+	connected_sock := accept_sock(listener_sock)
+	defer closeSockets(listener_sock, connected_sock)
+
+	textMsg := "Ok"
+	if syscall.Sendto(connected_sock, []byte(textMsg), 0, nil) == nil {
+	} else {
+		panic("Sendto() failed")
+	}
+}
+
+func closeSockets(sockets ...int) {
+	for _, socket := range sockets {
+		if syscall.Close(socket) != nil {
+			panic(fmt.Sprintf("Close(%d) failed", socket))
+		}
+	}
+}
+
+func printListenerAddress(listener_sock int) {
 	if temp_sock_addr, err := syscall.Getsockname(listener_sock); err == nil {
 		if sa, ok := temp_sock_addr.(*syscall.SockaddrInet4); ok {
 			println("Connect to Port:", sa.Port)
 		} else {
 			panic("Invalid port")
 		}
-	}
-	sock := accept_sock(listener_sock)
-	defer func(sockets ...int) {
-		for _, socket := range sockets {
-			if syscall.Close(socket) != nil {
-				panic(fmt.Sprintf("Close(%d) failed", socket))
-			}
-		}
-	}(listener_sock, sock)
-
-	textMsg := "Ok"
-	if syscall.Sendto(sock, []byte(textMsg), 0, nil) == nil {
-	} else {
-		panic("Sendto() failed")
 	}
 }
 
