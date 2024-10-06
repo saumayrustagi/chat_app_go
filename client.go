@@ -22,18 +22,16 @@ func main() {
 
 	buffer := make([]byte, 1024)
 
-	if _, _, err := syscall.Recvfrom(sock, buffer, 0); err != nil {
-		panic("RecvFrom() failed")
-	}
+	recvInt := helper.Recv(sock, buffer)
 
-	println(string(buffer))
+	println(fmt.Sprintf("%d:", recvInt), string(buffer))
 }
 
 func getAddrFromArgs() int {
 	address, err := strconv.Atoi(os.Args[1])
 	if err != nil {
 		panic("Invalid number")
-}
+	}
 	return address
 }
 
