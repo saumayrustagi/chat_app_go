@@ -1,6 +1,7 @@
 package main
 
 import (
+	"chat_app/helper"
 	"fmt"
 	"os"
 	"strconv"
@@ -17,13 +18,7 @@ func main() {
 		panic(fmt.Sprintf("Error connecting to %v:%d", sockaddr.Addr, sockaddr.Port))
 	}
 
-	defer func(sockets ...int) {
-		for _, socket := range sockets {
-			if syscall.Close(socket) != nil {
-				panic(fmt.Sprintf("Close(%d) failed", socket))
-			}
-		}
-	}(sock)
+	defer helper.CloseSockets(sock)
 
 	buffer := make([]byte, 1024)
 

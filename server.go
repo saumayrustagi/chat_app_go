@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"chat_app/helper"
 	"syscall"
 )
 
@@ -9,20 +9,12 @@ func main() {
 	listener_sock := create_listener()
 	printListenerAddress(listener_sock)
 	connected_sock := accept_sock(listener_sock)
-	defer closeSockets(listener_sock, connected_sock)
+	defer helper.CloseSockets(listener_sock, connected_sock)
 
 	textMsg := "Ok"
 	if syscall.Sendto(connected_sock, []byte(textMsg), 0, nil) == nil {
 	} else {
 		panic("Sendto() failed")
-	}
-}
-
-func closeSockets(sockets ...int) {
-	for _, socket := range sockets {
-		if syscall.Close(socket) != nil {
-			panic(fmt.Sprintf("Close(%d) failed", socket))
-		}
 	}
 }
 
