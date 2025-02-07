@@ -14,11 +14,11 @@ func Recv(sock int, buffer []byte) int {
 	panic("RecvFrom() failed")
 }
 
-func Make_buffer() []byte {
+func MakeBuffer() []byte {
 	return make([]byte, BUFFER_SIZE)
 }
 
-func Close_sockets(sockets ...int) {
+func CloseSockets(sockets ...int) {
 	for _, socket := range sockets {
 		if syscall.Close(socket) != nil {
 			panic(fmt.Sprintf("Close(%d) failed", socket))

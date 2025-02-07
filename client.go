@@ -9,6 +9,17 @@ import (
 )
 
 func main() {
+	connected_sock := connectToServer()
+	defer helper.CloseSockets(connected_sock)
+
+	buffer := helper.MakeBuffer()
+
+	recvInt := helper.Recv(connected_sock, buffer)
+
+	println(fmt.Sprintf("%d:", recvInt), string(buffer))
+}
+
+func connectToServer() int {
 	address := getAddrFromArgs()
 	sock := createSocket()
 
@@ -17,14 +28,7 @@ func main() {
 	if syscall.Connect(sock, &sockaddr) != nil {
 		panic(fmt.Sprintf("Error connecting to %v:%d", sockaddr.Addr, sockaddr.Port))
 	}
-
-	defer helper.Close_sockets(sock)
-
-	buffer := helper.Make_buffer()
-
-	recvInt := helper.Recv(sock, buffer)
-
-	println(fmt.Sprintf("%d:", recvInt), string(buffer))
+	return sock
 }
 
 func getAddrFromArgs() int {

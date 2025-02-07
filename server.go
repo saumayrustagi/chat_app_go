@@ -8,17 +8,25 @@ import (
 )
 
 func main() {
-	listener_sock := create_listener()
-	printListenerAddress(listener_sock)
-	connected_sock := accept_sock(listener_sock)
-	defer helper.Close_sockets(listener_sock, connected_sock)
+	connected_sock := createAndAcceptConnection()
+	defer helper.CloseSockets(connected_sock)
 
-	send_buffer := helper.Make_buffer()
+	send_buffer := helper.MakeBuffer()
 	copy(send_buffer, "Ok")
 	if syscall.Sendto(connected_sock, send_buffer, 0, nil) == nil {
 	} else {
 		panic("Sendto() failed")
 	}
+}
+
+func createAndAcceptConnection() int {
+	listener_sock := create_listener()
+	defer helper.CloseSockets(listener_sock)
+
+	printListenerAddress(listener_sock)
+
+	connected_sock := accept_sock(listener_sock)
+	return connected_sock
 }
 
 func printListenerAddress(listener_sock int) {
