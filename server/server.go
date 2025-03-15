@@ -12,10 +12,15 @@ func main() {
 	defer helper.CloseSockets(connected_sock)
 
 	send_buffer := helper.MakeBuffer()
-	copy(send_buffer, "Ok")
-	if syscall.Sendto(connected_sock, send_buffer, 0, nil) == nil {
-	} else {
-		panic("Sendto() failed")
+	for {
+		n, err := syscall.Read(syscall.Stdin, send_buffer)
+		if err != nil {
+			panic("Read() failed")
+		}
+		if syscall.Sendto(connected_sock, send_buffer[:n-1], 0, nil) != nil {
+			fmt.Println("Sendto() failed")
+			break
+		}
 	}
 }
 
@@ -55,7 +60,7 @@ func accept_sock(listener_sock int) int {
 
 func create_listener() int {
 	if sock, err := syscall.Socket(syscall.AF_INET, syscall.SOCK_STREAM, 0); err == nil {
-		sock_addr := syscall.SockaddrInet4{Addr: [4]byte{127, 0, 0, 1}}
+		sock_addr := syscall.SockaddrInet4{Port: 8080, Addr: [4]byte{127, 0, 0, 1}}
 		if syscall.Bind(sock, &sock_addr) == nil {
 			if syscall.Listen(sock, 1024) == nil {
 				return sock

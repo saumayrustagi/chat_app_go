@@ -20,8 +20,8 @@ func MakeBuffer() []byte {
 
 func CloseSockets(sockets ...int) {
 	for _, socket := range sockets {
-		if syscall.Close(socket) != nil {
-			panic(fmt.Sprintf("Close(%d) failed", socket))
+		if err := syscall.Close(socket); err != nil {
+			fmt.Println("Close() Error:", err)
 		}
 	}
 }
