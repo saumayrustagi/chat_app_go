@@ -11,17 +11,9 @@ func main() {
 	connected_sock := createAndAcceptConnection()
 	defer helper.CloseSockets(connected_sock)
 
-	send_buffer := helper.MakeBuffer()
-	for {
-		n, err := syscall.Read(syscall.Stdin, send_buffer)
-		if err != nil {
-			panic("Read() failed")
-		}
-		if syscall.Sendto(connected_sock, send_buffer[:n-1], 0, nil) != nil {
-			fmt.Println("Sendto() failed")
-			break
-		}
-	}
+	go helper.SenderLoop(connected_sock)
+
+	helper.ReceiverLoop(connected_sock)
 }
 
 func createAndAcceptConnection() int {

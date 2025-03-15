@@ -12,14 +12,9 @@ func main() {
 	connected_sock := connectToServer()
 	defer helper.CloseSockets(connected_sock)
 
-	for {
-		receive_buffer := helper.MakeBuffer()
-		recvInt := helper.Recv(connected_sock, receive_buffer)
-		if recvInt == 0 { //connection closed
-			break
-		}
-		print(fmt.Sprintf("%d:", recvInt), string(receive_buffer))
-	}
+	go helper.SenderLoop(connected_sock)
+
+	helper.ReceiverLoop(connected_sock)
 }
 
 func connectToServer() int {
