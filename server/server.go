@@ -52,7 +52,7 @@ func accept_sock(listener_sock int) int {
 
 func create_listener() int {
 	if sock, err := syscall.Socket(syscall.AF_INET, syscall.SOCK_STREAM, 0); err == nil {
-		sock_addr := syscall.SockaddrInet4{Port: 8080, Addr: [4]byte{127, 0, 0, 1}}
+		sock_addr := syscall.SockaddrInet4{Port: 8080, Addr: helper.GetAddrFromArgs(1)}
 		if syscall.Bind(sock, &sock_addr) == nil {
 			if syscall.Listen(sock, 1024) == nil {
 				return sock

@@ -2,6 +2,9 @@ package helper
 
 import (
 	"fmt"
+	"os"
+	"strconv"
+	"strings"
 	"syscall"
 	"unicode/utf8"
 )
@@ -62,4 +65,29 @@ func CloseSockets(sockets ...int) {
 			fmt.Println("Close() Error:", err)
 		}
 	}
+}
+
+func GetPortFromArgs(position int) int {
+	port, err := strconv.Atoi(os.Args[position])
+	if err != nil {
+		panic("Invalid number")
+	}
+	return port
+}
+
+func GetAddrFromArgs(position int) [4]byte {
+	stringIPArray := strings.Split(os.Args[position], ".")
+	if len(stringIPArray) != 4 {
+		fmt.Println("Not an IP Address!")
+		panic("len(IP Address) != 4")
+	}
+	var byteIPArray [4]byte
+	for ind, str := range stringIPArray {
+		tmpint, err := strconv.Atoi(str)
+		if err != nil {
+			panic(err)
+		}
+		byteIPArray[ind] = byte(tmpint)
+	}
+	return byteIPArray
 }
