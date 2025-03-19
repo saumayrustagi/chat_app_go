@@ -91,3 +91,11 @@ func GetAddrFromArgs(position int) [4]byte {
 	}
 	return byteIPArray
 }
+
+func CreateSocket() int {
+	sock, err := syscall.Socket(syscall.AF_INET, syscall.SOCK_STREAM, 0)
+	if err != nil {
+		panic("Error creating socket")
+	}
+	return sock
+}
