@@ -30,7 +30,7 @@ func printListenerAddress(listener_sock int) {
 	if temp_sock_addr, err := syscall.Getsockname(listener_sock); err == nil {
 		if sa, ok := temp_sock_addr.(*syscall.SockaddrInet4); ok {
 			var addr string
-			for i := 0; i < 4; i++ {
+			for i := range 4 {
 				addr += strconv.Itoa(int(sa.Addr[i]))
 				if i != 3 {
 					addr += "."
