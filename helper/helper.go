@@ -12,6 +12,7 @@ import (
 
 const BUFFER_SIZE = 2048
 
+// TODO: Make it truly asynchronous without breaking input flow
 func Communication(connected_sock int) {
 	closed := make(chan bool)
 	sigChan := make(chan os.Signal, 1)
@@ -26,9 +27,9 @@ func Communication(connected_sock int) {
 
 	select {
 	case <-closed:
-		fmt.Print("======CONNECTION CLOSED======")
+		fmt.Printf("\r\033[K======CONNECTION CLOSED==========")
 	case <-sigChan:
-		fmt.Print("Closing Connection....")
+		fmt.Print("\r\033[KClosing Connection....")
 	}
 	fmt.Println()
 }
@@ -68,11 +69,11 @@ func ReceiverLoop(connected_sock int) {
 		default:
 			padding = 1
 		}
+		//TODO: correct padding
 		runeCount := utf8.RuneCount(receive_buffer)
 		countDiff := (recvInt - runeCount) / 3
-		for i := 0; i < max(40, 78-padding-runeCount-countDiff); i++ {
-			fmt.Print(" ")
-		}
+		padBytes := strings.Repeat(" ", max(40, 78-padding-runeCount-countDiff))
+		fmt.Print(string(padBytes))
 		fmt.Printf("%d: %s", recvInt, string(receive_buffer))
 	}
 }
