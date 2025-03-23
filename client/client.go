@@ -10,9 +10,7 @@ func main() {
 	connected_sock := connectToServer()
 	defer helper.CloseSockets(connected_sock)
 
-	go helper.SenderLoop(connected_sock)
-
-	helper.ReceiverLoop(connected_sock)
+	helper.Communication(connected_sock)
 }
 
 func connectToServer() int {

@@ -3,6 +3,7 @@ package helper
 import (
 	"fmt"
 	"os"
+	"os/signal"
 	"strconv"
 	"strings"
 	"syscall"
@@ -10,6 +11,27 @@ import (
 )
 
 const BUFFER_SIZE = 2048
+
+func Communication(connected_sock int) {
+	closed := make(chan bool)
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+
+	go SenderLoop(connected_sock)
+
+	go func() {
+		ReceiverLoop(connected_sock)
+		closed <- true
+	}()
+
+	select {
+	case <-closed:
+		fmt.Print("======CONNECTION CLOSED======")
+	case <-sigChan:
+		fmt.Print("Closing Connection....")
+	}
+	fmt.Println()
+}
 
 func SenderLoop(connected_sock int) {
 	send_buffer := MakeBuffer()

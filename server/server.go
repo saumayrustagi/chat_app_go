@@ -11,9 +11,7 @@ func main() {
 	connected_sock := createAndAcceptConnection()
 	defer helper.CloseSockets(connected_sock)
 
-	go helper.SenderLoop(connected_sock)
-
-	helper.ReceiverLoop(connected_sock)
+	helper.Communication(connected_sock)
 }
 
 func createAndAcceptConnection() int {
@@ -53,6 +51,9 @@ func accept_sock(listener_sock int) int {
 func create_listener() int {
 	sock := helper.CreateSocket()
 	sock_addr := syscall.SockaddrInet4{Port: 8080, Addr: helper.GetAddrFromArgs(1)}
+	if err := syscall.SetsockoptInt(sock, syscall.SOL_SOCKET, syscall.SO_REUSEADDR, 1); err != nil {
+		fmt.Println("SO_REUSEADDR failed:", err)
+	}
 	if syscall.Bind(sock, &sock_addr) == nil {
 		if syscall.Listen(sock, 1024) == nil {
 			return sock
